@@ -1,3 +1,3 @@
-![](assets/engine_logo.png)
+# Kartoffelskript Language
 
 Copyright 2018 Project Kartoffelskript.
