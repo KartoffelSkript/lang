@@ -13,8 +13,8 @@ endif()
 set(kscript_VERSION_MAJOR 1)
 set(kscript_VERSION_MINOR 0)
 set(kscript_VERSION_FULL "${kscript_VERSION_MAJOR}.${kscript_VERSION_MINOR}")
-set(kscript_VERBOSE TRUE)
 
+include(cmake/kscript-options.cmake)
 include(cmake/kscript-dev-tools.cmake)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
