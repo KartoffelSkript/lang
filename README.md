@@ -1,7 +1,3 @@
-# Kartoffelskript Engine
-
 ![](assets/engine_logo.png)
 
-Parser, interpreter and runtime of the Kartoffelskript language.
-
-
+Copyright 2018 Project Kartoffelskript.
