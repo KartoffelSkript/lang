@@ -4,6 +4,6 @@
 
 #include "kscript.h"
 
-int main(int argc, char *argv) {
-
+int main(int argc, char **argv) {
+  std::cout << "Hallo kartoffelskript" << std::endl;
 }
