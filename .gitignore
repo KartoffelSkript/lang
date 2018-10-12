@@ -4,6 +4,7 @@ cmake/cmake-build-debug/
 ./.build/
 ./_build/
 .vs
+.idea
 
 # Common file-patterns of Java IDEs and Build Systems:
 # IntelliJ, Eclipse, Netbeans, Gradle
