@@ -1,0 +1,62 @@
+# File-patterns of common c++ IDEs.
+cmake/.idea
+cmake/cmake-build-debug/
+./.build/
+./_build/
+.vs
+
+# Common file-patterns of Java IDEs and Build Systems:
+# IntelliJ, Eclipse, Netbeans, Gradle
+java/.gradle
+java/.idea
+java/build/
+java/**/.classpath
+java/**/.settings/
+java/**/.loadpath
+java/**/.recommenders
+java/**/.gradletasknamecache
+java/**/*.iml
+java/**/*.launch
+java/**/target
+!gradle-wrapper.jar
+java/gradle/wrapper/gradle-wrapper.properties
+
+# Miscellaneous file-patterns:
+.metadata
+tmp/
+cmake/build
+build_msvc
+**/.DS_Store
+*.swp
+
+src/.libs
+
+*.pyc
+*.egg-info
+*_pb2.py
+python/**/*.egg
+python/.eggs/
+python/.tox
+python/build/
+venv
+
+# Mostly binary file-patterns.
+*.d
+*.slo
+*.lo
+*.o
+*.obj
+*.gch
+*.pch
+*.so
+*.dylib
+*.dll
+*.mod
+*.smod
+*.lai
+*.la
+*.a
+*.lib
+*.exe
+*.out
+*.app
