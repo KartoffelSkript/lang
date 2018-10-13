@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(kscript)
+project(kscript CXX)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "" FORCE)
@@ -27,6 +27,8 @@ endif ()
 
 include(include/CMakeLists.txt)
 include(src/CMakeLists.txt)
+
+set_target_properties(kscript PROPERTIES LINKER_LANGUAGE CXX)
 
 if (kscript_VERBOSE)
     kscript_info("Building kscript version ${kscript_VERSION_FULL}")
