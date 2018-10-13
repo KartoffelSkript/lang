@@ -25,12 +25,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     include(cmake/clang-cxx-dev-tools.cmake)
 endif ()
 
-include(include/CMakeLists.txt)
-
 if (kscript_VERBOSE)
     kscript_info("Building kscript version ${kscript_VERSION_FULL}")
 endif ()
 
+include(include/CMakeLists.txt)
 include(src/CMakeLists.txt)
 
 set_target_properties(kscript PROPERTIES LINKER_LANGUAGE CXX)
