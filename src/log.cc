@@ -24,7 +24,6 @@ Logger::Logger(StringWriter *output, const std::string prefix, Level threshold_l
       prefix_(prefix),
       threshold_level_(threshold_level) {}
 
-
 Logger::~Logger() {
   delete (this->output_);
 }
@@ -45,9 +44,10 @@ void Logger::Log(Level level, const std::string &message, TArgs...args) const {
 }
 
 void Logger::LogObject(Level level, Loggable &loggable) const {
-  output_->Write(LoggerLevelName(level));
+  WriteLogPrefix(level);
 
   loggable.WriteToLogger(*output_);
+  output_->Flush();
 }
 
 void Logger::LogObject(Level level, const Loggable &loggable) const {
@@ -57,6 +57,7 @@ void Logger::LogObject(Level level, const Loggable &loggable) const {
   output_->Flush();
 }
 
+// Make sure to flush writer when calling this.
 void Logger::WriteLogPrefix(Level level) const {
   output_->Write(prefix_);
   output_->Write(LoggerLevelName(level));
