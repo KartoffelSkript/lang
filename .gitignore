@@ -23,6 +23,7 @@ java/**/target
 java/gradle/wrapper/gradle-wrapper.properties
 
 # Miscellaneous file-patterns:
+bin/
 .metadata
 tmp/
 cmake/build
