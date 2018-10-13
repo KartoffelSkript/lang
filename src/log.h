@@ -166,10 +166,12 @@ class Logger {
   StringWriter *output_;
 };
 
+// Object that can be written to the Logger. Uses the
+// Visitor pattern to allow logging of user-made objects.
 class Loggable {
- public:
+ protected:
 
-  // 
+  // Writes the objects contents to the loggers writer.
   virtual void WriteToLogger(const StringWriter &writer) const = 0;
 
 };
