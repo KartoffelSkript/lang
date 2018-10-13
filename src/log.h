@@ -37,6 +37,10 @@ class StreamStringWriter;
 // implementation should provide sufficient synchronization.
 class Logger {
 
+  // The logger is a friend of the Loggable
+  // class to use its write  method.
+  friend class Loggable;
+
   // Used size to initialize the messages char buffer
   // for formatting. To prevent bad formatting, the
   // length of a message should not exceed this value.
@@ -166,13 +170,11 @@ class Logger {
   StringWriter *output_;
 };
 
-// Object that can be written to the Logger. Uses the
-// Visitor pattern to allow logging of user-made objects.
+// Object that can be written to the Logger.
 class Loggable {
- protected:
 
   // Writes the objects contents to the loggers writer.
-  virtual void WriteToLogger(const StringWriter &writer) const = 0;
+  friend virtual void WriteToLogger(const StringWriter &writer) const = 0;
 
 };
 
