@@ -83,48 +83,23 @@ class Logger {
   inline void LogObject(Level level, const Loggable &loggable) const;
 
   // Formats the string and logs it as a debug message.
-  //
-  // This method is equivalent to:
-  //    Logger* logger = ...;
-  //    logger->Log(Logger::Level::kDebug, "Some debug message");
-  //
   template<typename ...TArgs>
   inline void Debug(const std::string &message, TArgs ...args);
 
   // Formats the string and logs it as an info message.
-  //
-  // This method is equivalent to:
-  //    Logger* logger = ...;
-  //    logger->Log(Logger::Level::kInfo, "Some information");
-  //
   template<typename ...TArgs>
   inline void Info(const std::string &message, TArgs ...args);
 
   // Formats the string and logs it as a warning message.
-  //
-  // This method is equivalent to:
-  //    Logger* logger = ...;
-  //    logger->Log(Logger::Level::kWarning, "Some warning");
-  //
   template<typename ...TArgs>
   inline void Warning(const std::string &message, TArgs ...args);
 
   // Formats the string and logs it as an error message.
-  //
-  // This method is equivalent to:
-  //    Logger* logger = ...;
-  //    logger->Log(Logger::Level::kError, "Some error");
-  //
   template<typename ...TArgs>
   inline void Error(const std::string &message, TArgs ...args);
 
   // Formats the string, logs it as a severe error message and
   // then shuts down the application gracefully.
-  //
-  // This method is equivalent to:
-  //    Logger* logger = ...;
-  //    logger->Log(Logger::Level::kSevere, "Some severe error");
-  //
   template<typename ...TArgs>
   inline void Severe(const std::string &message, TArgs ...args);
 
