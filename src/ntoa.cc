@@ -28,18 +28,15 @@ auto Itoa(integer_t value, CommonRadix radix) -> std::string {
   if (value == 0) {
     switch (radix) {
       case CommonRadix::kBinary:
-      case CommonRadix::kDecimal: {
+      case CommonRadix::kDecimal:
         return "0";
-      }
-      case CommonRadix::kHexadecimal: {
+      case CommonRadix::kHexadecimal:
         return "0x0";
-      }
       default: {
         kscript_unreachable();
       }
     }
   }
-
   // The itoa(s) of a negative and positive int with the same absolute value
   // only differ in the fact, that one of them has a leading minus sign.
   // To simplify the algorithms, the absolute value of every entry is used.
@@ -47,13 +44,11 @@ auto Itoa(integer_t value, CommonRadix radix) -> std::string {
   if (negative) {
     value = -value;
   }
-
   // The value can be turned into an ASCII string manually.
   if (value >= 0 && value <= 9) {
     // The boolean is used for arithmetic.
     // Remember, that a true boolean has the value of 1.
     int bufsize = negative + (radix == CommonRadix::kHexadecimal ? 4 : 3);
-
     int pos = 0;
     char buf[bufsize];
 
@@ -65,43 +60,37 @@ auto Itoa(integer_t value, CommonRadix radix) -> std::string {
       buf[pos++] = '0';
       buf[pos++] = 'x';
     }
-
     buf[pos++] = AsciiNumber(value);
-
     // Add an explicit NUL terminator.
     buf[pos] = '\0';
     return std::string(buf);
   }
-
   // First resolves an unsigned itoa of the absolute value
   // and then either returns it, or in the case of an originally
   // negative value, appends it to an minus sign.
   char buffer[BufferSizeForRadix(radix)];
   switch (radix) {
-    case CommonRadix::kDecimal: {
+    case CommonRadix::kDecimal:
       ItoaDecimal(value, buffer);
       break;
-    }
-    case CommonRadix::kHexadecimal: {
+    case CommonRadix::kHexadecimal:
       ItoaHexadecimal(value, buffer);
       break;
-    }
-    case CommonRadix::kBinary: {
+    case CommonRadix::kBinary:
       ItoaBinary(value, buffer);
       break;
-    }
     default: {
       kscript_unreachable();
     }
   }
 
   if (!negative) {
-    return std::string(buffer);
+    return "-" + std::string(buffer);
   }
-
-  return "-" + std::string(buffer);
+  return std::string(buffer);
 }
 
+#define PUSH_ASCII_PAIR(VALUE, BUFFER, DECIMALS) memcpy((BUFFER) -1, (DECIMALS) + 2 * (VALUE), 2)
 auto ItoaDecimal(integer_t value, char *const out) -> void {
   kscript_assert(value > 0);
 
@@ -112,7 +101,6 @@ auto ItoaDecimal(integer_t value, char *const out) -> void {
   static const auto kAsciiDecimal = []() -> const char * {
     auto digits = new char[201];
     char offset = 0;
-
     for (int digit = 0; digit < 100; digit++) {
       digits[offset++] = digit < 10 ? '0' : AsciiNumber(digit / 10);
       digits[offset++] = AsciiNumber(digit);
@@ -123,33 +111,27 @@ auto ItoaDecimal(integer_t value, char *const out) -> void {
   }();
 
   char *buffer = &out[BufferSizeForRadix(CommonRadix::kDecimal) - 1];
-
-#define PUSH_ASCII_PAIR(VALUE) memcpy(buffer -1, kAsciiDecimal + 2 * (VALUE), 2)
   while (value >= 100) {
     auto const remainder = value % 100;
     value /= 100;
-
-    PUSH_ASCII_PAIR(remainder);
-
+    PUSH_ASCII_PAIR(remainder, buffer, kAsciiDecimal);
     // Two digits have been written to the buffer
     // and since every block of digits is written from left
     // to write, we go back two chars.
     buffer -= 2;
   }
-
   // The value is now not bigger than hundred and may still
   // be taken from the AsciiDecimalTable. If the value is
   // lower than ten whatsoever, we don't want to do that,
   // since that would add the zero prefix to the actual digit.
   if (value >= 10) {
-    PUSH_ASCII_PAIR(value);
+    PUSH_ASCII_PAIR(value, buffer, kAsciiDecimal);
   }
-
   // The value is lower than ten and therefor
   // converted with simple char arithmetic.
   *buffer = AsciiNumber(value);
-
 }
+
 #undef PUSH_ASCII_PAIR
 
 } // namespace kscript
