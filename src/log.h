@@ -72,44 +72,44 @@ class Logger {
 
   // Formats message based on the varargs and then logs it.
   template<typename ...TArgs>
-  inline void Log(Level level, const std::string &message, TArgs ...args) const;
+  void Log(Level level, const std::string &message, TArgs ...args) const;
 
   // Prints the object to the loggers output by using its
   // polymorphic 'WriteToLogger' method.
-  inline void LogObject(Level level, Loggable &loggable) const;
+  void LogObject(Level level, Loggable &loggable) const;
 
   // Prints the constant object to the loggers output by
   // using its polymorphic 'WriteToLogger' method.
-  inline void LogObject(Level level, const Loggable &loggable) const;
+  void LogObject(Level level, const Loggable &loggable) const;
 
   // Formats the string and logs it as a debug message.
   template<typename ...TArgs>
-  inline void Debug(const std::string &message, TArgs ...args);
+  void Debug(const std::string &message, TArgs ...args);
 
   // Formats the string and logs it as an info message.
   template<typename ...TArgs>
-  inline void Info(const std::string &message, TArgs ...args);
+  void Info(const std::string &message, TArgs ...args);
 
   // Formats the string and logs it as a warning message.
   template<typename ...TArgs>
-  inline void Warning(const std::string &message, TArgs ...args);
+  void Warning(const std::string &message, TArgs ...args);
 
   // Formats the string and logs it as an error message.
   template<typename ...TArgs>
-  inline void Error(const std::string &message, TArgs ...args);
+  void Error(const std::string &message, TArgs ...args);
 
   // Formats the string, logs it as a severe error message and
   // then shuts down the application gracefully.
   template<typename ...TArgs>
-  inline void Severe(const std::string &message, TArgs ...args);
+  void Severe(const std::string &message, TArgs ...args);
 
   // Returns the loggers threshold-level.
-  inline const Level threshold_level() const {
+  inline auto threshold_level() const -> Level {
     return this->threshold_level_;
   }
 
   // Returns the loggers logging prefix.
-  inline const std::string &prefix() const {
+  inline auto &prefix() const -> std::string {
     return this->prefix_;
   }
 
