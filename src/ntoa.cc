@@ -63,6 +63,7 @@ auto Itoa(integer_t value, CommonRadix radix) -> std::string {
     buf[pos++] = AsciiNumber(value);
     // Add an explicit NUL terminator.
     buf[pos] = '\0';
+
     return std::string(buf);
   }
   // First resolves an unsigned itoa of the absolute value
