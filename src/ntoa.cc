@@ -23,7 +23,7 @@ auto BufferSizeForRadix(const char radix) -> char {
   return static_cast<>(radix + 2);
 }
 
-auto Itoa(integer_t value, CommonRadix radix) -> std::string {
+auto Itoa(integer_t value, const CommonRadix radix) -> std::string {
   // Value is zero and therefor turned into an ASCII string manually.
   if (value == 0) {
     switch (radix) {
@@ -48,23 +48,21 @@ auto Itoa(integer_t value, CommonRadix radix) -> std::string {
   if (value >= 0 && value <= 9) {
     // The boolean is used for arithmetic.
     // Remember, that a true boolean has the value of 1.
-    int bufsize = negative + (radix == CommonRadix::kHexadecimal ? 4 : 3);
-    int pos = 0;
-    char buf[bufsize];
-
+    int buffer_pos, buffer_size = negative + (radix == CommonRadix::kHexadecimal ? 4 : 3);
+    char buffer[buffer_size];
+    // If it is negative we have on more index to set.
+    buffer_pos = 0;
     if (negative) {
-      buf[pos++] = '-';
+      buffer[buffer_pos++] = '-';
     }
-
+    // Add prefix for hexadecimal itoa.
     if (radix == CommonRadix::kHexadecimal) {
-      buf[pos++] = '0';
-      buf[pos++] = 'x';
+      buffer[buffer_pos++] = '0';
+      buffer[buffer_pos++] = 'x';
     }
-    buf[pos++] = AsciiNumber(value);
-    // Add an explicit NUL terminator.
-    buf[pos] = '\0';
-
-    return std::string(buf);
+    buffer[buffer_pos++] = AsciiNumber(value);
+    buffer[buffer_pos] = '\0';
+    return std::string(buffer);
   }
   // First resolves an unsigned itoa of the absolute value
   // and then either returns it, or in the case of an originally
@@ -84,11 +82,7 @@ auto Itoa(integer_t value, CommonRadix radix) -> std::string {
       kscript_unreachable();
     }
   }
-
-  if (!negative) {
-    return "-" + std::string(buffer);
-  }
-  return std::string(buffer);
+  return negative ? "-" + std::string(buffer) : std::string(buffer);
 }
 
 #define PUSH_ASCII_PAIR(VALUE, BUFFER, DECIMALS) memcpy((BUFFER) -1, (DECIMALS) + 2 * (VALUE), 2)
