@@ -5,5 +5,7 @@
 #include "kscript.h"
 
 namespace kscript {
+namespace internal {
 
+}
 }
