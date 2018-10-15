@@ -12,7 +12,7 @@ namespace internal {
 void ItoaDecimal(integer_t value, char *out);
 void ItoaHexadecimal(integer_t value, char *out);
 void ItoaBinary(integer_t value, char *out);
-auto BufferSizeForRadix(char radix) -> char;
+inline auto BufferSizeForRadix(char radix) -> char;
 
 auto Itoa(integer_t value) -> std::string {
   return Itoa(value, CommonRadix::kDecimal);
@@ -86,7 +86,6 @@ auto Itoa(integer_t value, const CommonRadix radix) -> std::string {
 // two digits at once. Has a better performance than the naive itoa implementation.
 void ItoaDecimal(integer_t value, char *const out) {
   kscript_assert(value > 0);
-
   // String of ASCII number pairs that increments from '00' to '99.
   // The decimal itoa function uses this as a lookup for numbers
   // greater or equal to then. That way, two digits can be
@@ -125,9 +124,19 @@ void ItoaDecimal(integer_t value, char *const out) {
   *buffer = AsciiNumber(value);
 }
 
+// Returns the size that a char-buffer should have in order to store
+// the digits of every possible number based on the given radix.
+// The maximum radix value  is (('9'-'0') + ('z' - 'a')). And that
+// value is  used to create the buffer-size. Remember that a binary
+// itoa needs much more digits than a hexadecimal one. The golden
+// rule of thumb, when maintaining this function, is following:
+// > Rather return ten too much than one too little.
 auto BufferSizeForRadix(const char radix) -> char {
-  kscript_assert(radix < 125);
-  return static_cast<>(radix + 2);
+  static constexpr char kMaxRadix = static_cast<>('9' - '0' + 'z' - 'a');
+  kscript_assert(radix <= kMaxRadix);
+
+  // TODO(merlinweber): Test whether this actually works for a low radix.
+  return static_cast<>(kMaxRadix - radix + 2);
 }
 
 #undef PUSH_ASCII_PAIR
