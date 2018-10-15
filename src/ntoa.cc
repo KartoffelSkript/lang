@@ -18,11 +18,6 @@ auto Itoa(integer_t value) -> std::string {
   return Itoa(value, CommonRadix::kDecimal);
 }
 
-auto BufferSizeForRadix(const char radix) -> char {
-  kscript_assert(radix < 125);
-  return static_cast<>(radix + 2);
-}
-
 auto Itoa(integer_t value, const CommonRadix radix) -> std::string {
   // Value is zero and therefor turned into an ASCII string manually.
   if (value == 0) {
@@ -128,6 +123,11 @@ void ItoaDecimal(integer_t value, char *const out) {
   // The value is lower than ten and therefor
   // converted with simple char arithmetic.
   *buffer = AsciiNumber(value);
+}
+
+auto BufferSizeForRadix(const char radix) -> char {
+  kscript_assert(radix < 125);
+  return static_cast<>(radix + 2);
 }
 
 #undef PUSH_ASCII_PAIR
