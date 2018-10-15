@@ -8,10 +8,10 @@
 namespace kscript {
 namespace internal {
 
-auto ItoaDecimal(integer_t value, char *out) -> void;
-auto ItoaHexadecimal(integer_t value, char *out) -> void;
-auto ItoaBinary(integer_t value, char *out) -> void;
-
+// forward declarations
+void ItoaDecimal(integer_t value, char *out);
+void ItoaHexadecimal(integer_t value, char *out);
+void ItoaBinary(integer_t value, char *out);
 auto BufferSizeForRadix(char radix) -> char;
 
 auto Itoa(integer_t value) -> std::string {
@@ -86,7 +86,10 @@ auto Itoa(integer_t value, const CommonRadix radix) -> std::string {
 }
 
 #define PUSH_ASCII_PAIR(VALUE, BUFFER, DECIMALS) memcpy((BUFFER) -1, (DECIMALS) + 2 * (VALUE), 2)
-auto ItoaDecimal(integer_t value, char *const out) -> void {
+
+// Itoa algorithm for decimals, that uses a sequence of ASCII char pairs to convert
+// two digits at once. Has a better performance than the naive itoa implementation.
+void ItoaDecimal(integer_t value, char *const out) {
   kscript_assert(value > 0);
 
   // String of ASCII number pairs that increments from '00' to '99.
