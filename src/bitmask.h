@@ -10,6 +10,8 @@
 namespace kscript {
 namespace internal {
 
+inline void BitmaskBoolBasedSet(int &field, const int &flag, bool state);
+
 inline void BitmaskSet(int &field, const int &flag);
 
 inline void BitmaskClear(int &field, const int &flag);

@@ -7,6 +7,14 @@
 namespace kscript {
 namespace internal {
 
+inline void BitmaskBoolBasedSet(int &field, const int &flag, const bool state) {
+  if (state) {
+    BitmaskSet(field, flag);
+  } else {
+    BitmaskUnset(field, flag);
+  }
+}
+
 inline void BitmaskSet(int &field, const int &flag) {
   field |= flag;
 }
