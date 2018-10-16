@@ -23,6 +23,7 @@ namespace internal {
 enum EngineState;
 
 enum EngineState {
+  kBooting,
   kParsing,
   kInterpreting
 };
