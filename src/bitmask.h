@@ -14,6 +14,8 @@ inline void BitmaskSet(int &field, const int &flag);
 
 inline void BitmaskClear(int &field, const int &flag);
 
+inline void BitmaskUnset(int &field, const int &flag);
+
 inline auto BitmaskCheck(int &field, const int &flag) -> const bool;
 
 } // namespace internal
