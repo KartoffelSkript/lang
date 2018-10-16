@@ -12,6 +12,7 @@
 #include <chrono>
 
 #include "kscript.h"
+#include "bitmask.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -41,7 +42,7 @@ class Formatter;
 class DateFormat;
 class DateFormatter;
 
-struct Entry;
+struct Record;
 struct CxxTrace;
 struct CxxMethodDescriptor;
 struct CxxExceptionDescriptor;
@@ -122,12 +123,12 @@ class ConfiguredLoggerFactory final : public LoggerFactory {
 
 class Filter {
  public:
-  auto Allow(const Entry &entry) const -> bool;
+  auto Allow(const Record &entry) const -> bool;
 };
 
 class Handler {
  public:
-  void Publish(Entry &entry) const;
+  void Publish(Record &entry) const;
 };
 
 class Formatter {
@@ -138,7 +139,7 @@ class DateFormatter {
 
 };
 
-struct Entry {
+struct Record {
   string message;
   milliseconds timestamp;
   Level severity;
@@ -146,22 +147,33 @@ struct Entry {
 
 class Config {
  public:
-  static const int kFlagEnableTimestamps = 1 << 0;
-  static const int kFlagAllowStackTracing = 1 << 1;
-  static const int kFlagEnableConsoleLog = 1 << 2;
-  static const int kFlagAllowConsoleColors = 1 << 3;
-  static const int kFlagEnableFileLogs = 1 << 4;
-  static const int kFlagExportStructured = 1 << 5;
-  static const int kFlagUseLazyFileLogging = 1 << 6;
-  static const int kFlagOnlySaveFileOnError = 1 << 7;
+  // Enables a timestamp at the beginning of a log.
+  static const int kFlagEnableTimestamps = BITMASK(1);
+  // Allows logging of stack traces (CxxTrace).
+  static const int kFlagAllowStackTracing = BITMASK(2);
+  // Enables runtime logging to the console.
+  static const int kFlagEnableConsoleLog = BITMASK(3);
+  // Allows colored console output when logging.
+  static const int kFlagAllowConsoleColors = BITMASK(4);
+  // Enables logging to files. If the lazy-file-logging
+  // flag is not set, the logs are written eagerly.
+  static const int kFlagEnableFileLogs = BITMASK(5);
+  // Enables structured exports of the logs in a xml format.
+  static const int kFlagExportStructured = BITMASK(6);
 
-  static const int kDirectoryFlagRelative = 1 << 0;
-  static const int kDirectoryFlagTemp = 1 << 1;
-  static const int kDirectoryFlagBuildDirChild = 1 << 2;
+  static const int kFlagUseLazyFileLogging = BITMASK(7);
+
+  static const int kFlagOnlySaveFileOnError = BITMASK(8);
+
+  static const int kDirectoryFlagRelative = BITMASK(1);
+
+  static const int kDirectoryFlagTemp = BITMASK(2);
+
+  static const int kDirectoryFlagBuildDirChild = BITMASK(3);
 
   struct Directory {
     string path;
-    int flags;
+    char flags;
   };
 
   static auto CreateDefault(EngineState state) -> shared_ptr<Config>;
@@ -173,45 +185,41 @@ class Config {
   inline auto operator=(const Config &) -> Config &;
 
   inline auto is_enabling_timestamps() const -> bool {
-    return (kFlagEnableTimestamps & flags_) != 0;
+    return BitmaskCheck(flags_, kFlagEnableTimestamps);
   }
 
   inline auto is_enabling_console_logs() const -> bool {
-    return (kFlagEnableConsoleLog & flags_) != 0;
-  }
-
-  inline auto is_allowing_console_colors() const -> bool {
-    return (kFlagAllowConsoleColors & flags_) != 0;
+    return BitmaskCheck(flags_, kFlagEnableConsoleLog);
   }
 
   inline auto is_allowing_stack_tracing() const -> bool {
-    return (kFlagAllowStackTracing & flags_) != 0;
+    return BitmaskCheck(flags_, kFlagAllowStackTracing);
+  }
+
+  inline auto is_allowing_console_colors() const -> bool {
+    return BitmaskCheck(flags_, kFlagAllowConsoleColors);
   }
 
   inline auto is_enabling_file_logs() const -> bool {
-    return (kFlagEnableFileLogs & flags_) != 0;
+    return BitmaskCheck(flags_, kFlagEnableFileLogs);
   }
 
   inline auto is_exporting_structures() const -> bool {
-    return (kFlagExportStructured & flags_) != 0;
+    return BitmaskCheck(flags_, kFlagExportStructured);
   }
 
   inline auto is_using_lazy_file_logging() const -> bool {
-    return (kFlagUseLazyFileLogging & flags_) != 0;
+    return BitmaskCheck(flags_, kFlagUseLazyFileLogging);
   }
 
   inline auto is_only_saving_files_on_error() const -> bool {
-    return (kFlagOnlySaveFileOnError & flags_) != 0;
+    return BitmaskCheck(flags_, kFlagOnlySaveFileOnError);
   }
 
-  inline auto flags() const -> int {
+  inline auto flags() const -> const int {
     return flags_;
   }
-
   // Returns a reference of the configs flags, which is mutable.
-  // This method may most commonly be used, to add and remove
-  // flags from / to the configuration.
-  //
   // To add a flag simply write:
   //    config.mutable_flags() |= Config::kFlagEnableTimestamps;
   inline auto mutable_flags() -> int & {
@@ -226,37 +234,53 @@ class Config {
     return logging_level_fallback_;
   }
 
-  inline auto export_file_dir() const -> string {
+  inline auto export_file_dir() const -> const Directory & {
     return export_file_dir_;
   }
 
-  inline auto export_file_name_pattern() const -> string {
-    return export_file_name_pattern_;
-  }
-
-  inline auto log_file_dir() const -> string {
+  inline auto log_file_dir() const -> const Directory & {
     return log_file_dir_;
   }
 
-  inline auto log_file_name_pattern() const -> string {
+  inline auto export_file_name_pattern() const -> const string {
+    return export_file_name_pattern_;
+  }
+
+  inline auto log_file_name_pattern() const -> const string {
     return log_file_name_pattern_;
   }
 
-  inline void enable_timestamps(bool state = true);
+  inline void enable_timestamps(bool value = true) {
+    BitmaskBoolBasedSet(flags_, kFlagEnableTimestamps, value);
+  }
 
-  inline void enable_console_logs(bool state = true);
+  inline void enable_console_logs(bool value = true) {
+    BitmaskBoolBasedSet(flags_, kFlagEnableConsoleLog, value);
+  }
 
-  inline void allow_console_colors(bool state = true);
+  inline void allow_console_colors(bool value = true) {
+    BitmaskBoolBasedSet(flags_, kFlagAllowConsoleColors, value);
+  }
 
-  inline void allow_stack_tracing(bool state = true);
+  inline void allow_stack_tracing(bool value = true) {
+    BitmaskBoolBasedSet(flags_, kFlagAllowStackTracing, value);
+  }
 
-  inline void enable_file_logs(bool state = true);
+  inline void enable_file_logs(bool value = true) {
+    BitmaskBoolBasedSet(flags_, kFlagEnableFileLogs, value);
+  }
 
-  inline void export_structures(bool state = true);
+  inline void export_structures(bool value = true) {
+    BitmaskBoolBasedSet(flags_, kFlagExportStructured, value);
+  }
 
-  inline void use_lazy_file_logging(bool state = true);
+  inline void use_lazy_file_logging(bool value = true) {
+    BitmaskBoolBasedSet(flags_, kFlagUseLazyFileLogging, value);
+  }
 
-  inline void only_save_files_on_error(bool state = true);
+  inline void only_save_files_on_error(bool value = true) {
+    BitmaskBoolBasedSet(flags_, kFlagOnlySaveFileOnError, value);
+  }
 
   inline void flags(const int flags) {
     flags_ = flags;
@@ -308,7 +332,7 @@ class Config {
   // in the file-system or, if it is an absolute path or just relative.
   // Directories should not contain non-alphabetical and non-number
   // symbols apart from dashes, underscores and dots at the first position.
-  static auto AllowDirName(Directory dir) -> bool;
+  static auto AllowDirName(const Directory &dir) -> bool;
   // Checks whether the given format is valid. A file-pattern
   // specifies the log-files format and file-type. Valid patterns
   // either shouldn't contain andy dots, or at no dot
